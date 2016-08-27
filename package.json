@@ -1,0 +1,26 @@
+{
+  "name": "flourish",
+  "version": "0.3.0",
+  "description": "AJAX link loader",
+  "main": "src/flourish.js",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "1.0.1",
+    "grunt-contrib-uglify": "2.0.0"
+  },
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aesqe/flourish.git"
+  },
+  "keywords": [
+    "ajax"
+  ],
+  "author": "aesqe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aesqe/flourish/issues"
+  },
+  "homepage": "https://github.com/aesqe/flourish#readme"
+}
