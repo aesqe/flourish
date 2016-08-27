@@ -36,7 +36,3 @@ function ajaxLoadLink (e) {
 	});
 }
 ```
-
-
-
-```
