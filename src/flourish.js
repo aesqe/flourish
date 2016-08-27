@@ -1,5 +1,5 @@
 /*
-	Flourish v0.2
+	Flourish v0.3
 */
 
 function Flourish ( options )
@@ -224,42 +224,46 @@ Flourish.prototype = {
 			options = this.extend(this.extend({}, this.options), options);
 		}
 
+		options.documentClasses = output.documentClasses;
+
 		var container = document.querySelector(options.replaceSelector);
 
 		if( container )
 		{
 			var documentTitle = document.querySelector("title");
-			var bodyEl = document.querySelector("body");
 			var len = 0;
 			var i = 0;
-
-			if( options.replaceBodyClasses )
-			{
-				bodyEl.className = output.documentClasses.body;
-
-				if( options.bodyTransitionClass ) {
-					bodyEl.className += options.bodyTransitionClass;
-				}
-			}
+			var delay = Number(options.replaceDelay);
 
 			documentTitle.innerHTML = output.title;
 
-			if( Number(options.replaceDelay) ) {
-				this.replaceContentsWithDelay(options, container, output.el.children);
-			} else {
-				this.replaceContentsNow(options, container, output.el.children);
+			var cb = "replaceContentsNow";
+
+			if( delay ) {
+				cb = "replaceContentsWithDelay";
 			}
+
+			this[cb](options, container, output.el.children);
 		}
 	},
 
 	replaceContentsNow: function ( options, container, newNodes )
 	{
+		var bodyEl = document.querySelector("body");
 		var ignoredClasses = options.replaceIgnoreClasses;
 		var oldNodes = container.children;
 		var matchedClasses = [];
 		var hasClasses = [];
 		var child;
 		var i = 0;
+
+		if( options.replaceBodyClasses ) {
+			bodyEl.className = options.documentClasses.body;
+
+			if( options.bodyTransitionClass ) {
+				bodyEl.className += options.bodyTransitionClass;
+			}
+		}
 
 		if( ignoredClasses.length )
 		{
@@ -324,6 +328,7 @@ Flourish.prototype = {
 	replaceContentsWithDelay: function ( options, container, newNodes )
 	{
 		var self = this;
+		var bodyEl = document.querySelector("body");
 		var ignoredClasses = options.replaceIgnoreClasses;
 		var transClass = options.childrenTransitionClass;
 		var oldNodes = container.children;
@@ -332,6 +337,10 @@ Flourish.prototype = {
 		var hasClasses = [];
 		var child;
 		var i = 0;
+
+		if( options.replaceBodyClasses && options.bodyTransitionClass ) {
+			bodyEl.className += options.bodyTransitionClass;
+		}
 
 		if( options.childrenTransitionClass )
 		{
@@ -353,6 +362,15 @@ Flourish.prototype = {
 
 		setTimeout(function()
 		{
+			if( options.replaceBodyClasses )
+			{
+				bodyEl.className = options.documentClasses.body;
+
+				if( options.bodyTransitionClass ) {
+					bodyEl.className += options.bodyTransitionClass;
+				}
+			}
+
 			if( ignoredClasses.length )
 			{
 				len = oldNodes.length;
