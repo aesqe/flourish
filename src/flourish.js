@@ -1,5 +1,5 @@
 /*
-	Flourish v0.3
+	Flourish v0.3.1
 */
 
 function Flourish ( options )
@@ -9,6 +9,7 @@ function Flourish ( options )
 		replaceContents: true,
 		replaceBodyClasses: true,
 		replaceDelay: false,
+		replaceDocumentTitle: true,
 		replaceIgnoreClasses: [],
 		bodyTransitionClass: "flourish-loading",
 		childrenTransitionClass: "flourish-removing",
@@ -44,6 +45,8 @@ Flourish.prototype = {
 
 			this.events[name].push(callback);
 		}
+
+		return this;
 	},
 
 	off: function( name, callback )
@@ -66,6 +69,8 @@ Flourish.prototype = {
 				e.length = 0;
 			}
 		}
+
+		return this;
 	},
 
 	fire: function( name )
@@ -83,6 +88,8 @@ Flourish.prototype = {
 				}
 			});
 		}
+
+		return this;
 	},
 
 	createDiv: function( contents )
@@ -230,12 +237,13 @@ Flourish.prototype = {
 
 		if( container )
 		{
-			var documentTitle = document.querySelector("title");
 			var len = 0;
 			var i = 0;
 			var delay = Number(options.replaceDelay);
 
-			documentTitle.innerHTML = output.title;
+			if( options.replaceDocumentTitle ) {
+				document.querySelector("title").innerHTML = output.title;
+			}
 
 			var cb = "replaceContentsNow";
 
@@ -360,7 +368,7 @@ Flourish.prototype = {
 			}
 		}
 
-		setTimeout(function()
+		setTimeout(function(newNodes)
 		{
 			if( options.replaceBodyClasses )
 			{
@@ -423,13 +431,18 @@ Flourish.prototype = {
 					container.removeChild(container.children[0]);
 				}
 
-				while( newNodes.length > 0 )
-				{
-					if( transClass ) {
-						newNodes[0].className += " " + transClass;
-					}
+				try {				
+					while( newNodes.length > 0 )
+					{
+						if( transClass ) {
+							newNodes[0].className += " " + transClass;
+						}
 
-					container.appendChild(newNodes[0]);
+						container.appendChild(newNodes[0]);
+					}
+				} catch(err) {
+					console.log(err, newNodes);
+					self.fire("replace_error", err);
 				}
 			}
 
@@ -449,7 +462,7 @@ Flourish.prototype = {
 
 			self.fire("post_replace");
 
-		}, options.replaceDelay);
+		}, options.replaceDelay, newNodes);
 	},
 
 	unique: function (val, i, arr)
