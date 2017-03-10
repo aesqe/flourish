@@ -1,5 +1,5 @@
 /*
-	Flourish v0.3.1
+	Flourish v0.3.2
 */
 
 function Flourish ( options )
@@ -12,7 +12,8 @@ function Flourish ( options )
 		replaceDocumentTitle: true,
 		replaceIgnoreClasses: [],
 		bodyTransitionClass: "flourish-loading",
-		childrenTransitionClass: "flourish-removing",
+		childrenRemovingClass: "flourish-removing",
+		childrenAddingClass: "flourish-adding",
 		fileExt: ["jpg", "jpeg", "bmp", "gif", "png", "webp"]
 	};
 
@@ -205,6 +206,7 @@ Flourish.prototype = {
 			output.el = output.el.querySelector(options.extractSelector);
 
 			if( ! output.el ) {
+				this.fire("selector_not_found_error", options.extractSelector)
 				return false;
 			}
 		}
@@ -267,10 +269,10 @@ Flourish.prototype = {
 
 		if( options.replaceBodyClasses ) {
 			bodyEl.className = options.documentClasses.body;
+		}
 
-			if( options.bodyTransitionClass ) {
-				bodyEl.className += options.bodyTransitionClass;
-			}
+		if( options.bodyTransitionClass ) {
+			bodyEl.className += " " + options.bodyTransitionClass;
 		}
 
 		if( ignoredClasses.length )
@@ -330,6 +332,10 @@ Flourish.prototype = {
 			}
 		}
 
+		if( options.bodyTransitionClass ) {
+			this.removeClass(bodyEl, options.bodyTransitionClass);
+		}
+
 		this.fire("post_replace");
 	},
 
@@ -338,7 +344,8 @@ Flourish.prototype = {
 		var self = this;
 		var bodyEl = document.querySelector("body");
 		var ignoredClasses = options.replaceIgnoreClasses;
-		var transClass = options.childrenTransitionClass;
+		var removingClass = options.childrenRemovingClass;
+		var addingClass = options.childrenAddingClass;
 		var oldNodes = container.children;
 		var len = oldNodes.length;
 		var matchedClasses = [];
@@ -346,11 +353,11 @@ Flourish.prototype = {
 		var child;
 		var i = 0;
 
-		if( options.replaceBodyClasses && options.bodyTransitionClass ) {
-			bodyEl.className += options.bodyTransitionClass;
+		if( options.bodyTransitionClass ) {
+			bodyEl.className += " " + options.bodyTransitionClass;
 		}
 
-		if( options.childrenTransitionClass )
+		if( removingClass )
 		{
 			while( len > 0 )
 			{
@@ -360,7 +367,7 @@ Flourish.prototype = {
 				{
 					// give the transition class only to nodes about to be removed
 					if( this.hasAnyClasses(child, ignoredClasses).length === 0 ) {
-						child.className += " " + transClass;
+						child.className += " " + removingClass;
 					}
 				}
 
@@ -370,13 +377,8 @@ Flourish.prototype = {
 
 		setTimeout(function(newNodes)
 		{
-			if( options.replaceBodyClasses )
-			{
+			if( options.replaceBodyClasses ) {
 				bodyEl.className = options.documentClasses.body;
-
-				if( options.bodyTransitionClass ) {
-					bodyEl.className += options.bodyTransitionClass;
-				}
 			}
 
 			if( ignoredClasses.length )
@@ -411,8 +413,8 @@ Flourish.prototype = {
 
 						if( hasClasses.length === 0 )
 						{
-							if( transClass ) {
-								child.className += " " + transClass;
+							if( addingClass ) {
+								child.className += " " + addingClass;
 							}
 
 							container.appendChild(child);
@@ -434,8 +436,8 @@ Flourish.prototype = {
 				try {				
 					while( newNodes.length > 0 )
 					{
-						if( transClass ) {
-							newNodes[0].className += " " + transClass;
+						if( addingClass ) {
+							newNodes[0].className += " " + addingClass;
 						}
 
 						container.appendChild(newNodes[0]);
@@ -446,7 +448,7 @@ Flourish.prototype = {
 				}
 			}
 
-			if( transClass )
+			if( addingClass )
 			{
 				setTimeout(function()
 				{
@@ -455,7 +457,11 @@ Flourish.prototype = {
 
 					for(i = 0; i < len; i++ )
 					{
-						self.removeClass(c[i], transClass);
+						self.removeClass(c[i], addingClass);
+					}
+
+					if( options.bodyTransitionClass ) {
+						self.removeClass(bodyEl, options.bodyTransitionClass);
 					}
 				}, 25);
 			}

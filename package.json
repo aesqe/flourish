@@ -1,6 +1,6 @@
 {
   "name": "flourish",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "AJAX link loader",
   "main": "src/flourish.js",
   "dependencies": {},
