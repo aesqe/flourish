@@ -1,5 +1,5 @@
 /*
-	Flourish v0.3.2
+	Flourish v0.3.3
 */
 
 function Flourish ( options )
@@ -27,6 +27,7 @@ function Flourish ( options )
 }
 
 Flourish.prototype = {
+	version: "0.3.3",
 
 	pushStateOK: (typeof history.pushState === "function"),
 
@@ -167,23 +168,25 @@ Flourish.prototype = {
 			return false;
 		}
 
-		var request = new XMLHttpRequest();
+		var xhr = new XMLHttpRequest();
 		
-		request.open("GET", options.url, true);
+		xhr.open("GET", options.url, true);
 
-		request.onload = function( progress )
+		xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+		xhr.onload = function( progress )
 		{
 			var cb = onerror;
 
-			if( request.status >= 200 && request.status < 400 ) {
+			if( xhr.status >= 200 && xhr.status < 400 ) {
 				cb = onsuccess;
 			}
 
-			return cb(request, options, self);
+			return cb(xhr, options, self);
 		};
 
-		request.onerror = onerror;
-		request.send();
+		xhr.onerror = onerror;
+		xhr.send();
 
 		return this;
 	},
