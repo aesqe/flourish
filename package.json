@@ -1,12 +1,12 @@
 {
   "name": "flourish",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "AJAX link loader",
   "main": "src/flourish.js",
   "dependencies": {},
   "devDependencies": {
-    "grunt": "1.0.1",
-    "grunt-contrib-uglify": "2.0.0"
+    "grunt": "latest",
+    "grunt-contrib-uglify": "latest"
   },
   "scripts": {
   },
